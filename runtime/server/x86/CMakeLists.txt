@@ -16,8 +16,6 @@ FetchContent_Declare(
   GIT_TAG        v2.2.0
   GIT_PROGRESS   TRUE
 )
-FetchContent_MakeAvailable(gflags)
-
 # third_party: glog
 FetchContent_Declare(
   glog
@@ -25,8 +23,6 @@ FetchContent_Declare(
   GIT_TAG        v0.4.0
   GIT_PROGRESS   TRUE
 )
-FetchContent_MakeAvailable(glog)
-
 # third_party: gtest
 FetchContent_Declare(
   googletest
@@ -34,8 +30,18 @@ FetchContent_Declare(
   GIT_TAG        release-1.10.0
   GIT_PROGRESS   TRUE
 )
-FetchContent_MakeAvailable(googletest)
-
+# third_party: fftw
+FetchContent_Declare(
+  fftw
+  URL      http://www.fftw.org/fftw-3.3.9.tar.gz
+  URL_HASH SHA256=bf2c7ce40b04ae811af714deb512510cc2c17b9ab9d6ddcf49fe4487eea7af3d
+)
+# third_party: boost
+FetchContent_Declare(
+  boost
+  URL      https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz
+  URL_HASH SHA256=aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a
+)
 # third_party: libtorch 1.6.0, use FetchContent_Declare to download, and
 # use find_package to find since libtorch is not a standard cmake project
 FetchContent_Declare(
@@ -43,38 +49,17 @@ FetchContent_Declare(
   URL      https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.6.0%2Bcpu.zip
   URL_HASH SHA256=c6c0d3a87039338f7812a1ae343b9e48198536f20d1415b0e5a9a15ba7b90b3f
 )
-FetchContent_GetProperties(libtorch)
-if(NOT libtorch_POPULATED)
-  FetchContent_Populate(libtorch)
-  message(STATUS "libtorch_SOURCE_DIR ${libtorch_SOURCE_DIR}")
-  set(Torch_DIR ${libtorch_SOURCE_DIR})
-endif()
-find_package(Torch REQUIRED PATHS ${Torch_DIR} NO_DEFAULT_PATH)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS} -DC10_USE_GLOG -std=c++14")
-message(STATUS "CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}")
-message(STATUS "TORCH_LIBRARIES ${TORCH_LIBRARIES}")
 
-# third_party: boost
-FetchContent_Declare(
-  boost
-  URL      https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz
-  URL_HASH SHA256=aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a
-)
-FetchContent_GetProperties(boost)
-if(NOT boost_POPULATED)
-  FetchContent_Populate(boost)
-  include_directories(${boost_SOURCE_DIR})
-  message(STATUS "INCLUDE_DIRECTORIES ${INCLUDE_DIRECTORIES}")
-endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+FetchContent_MakeAvailable(gflags glog googletest fftw boost libtorch)
 
+include_directories(${fftw_SOURCE_DIR})
+include_directories(${boost_SOURCE_DIR})
+find_package(Torch REQUIRED PATHS ${libtorch_SOURCE_DIR} NO_DEFAULT_PATH)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS} -DC10_USE_GLOG -std=c++14 -pthread")
 
 # frontend
-add_library(frontend STATIC
-  frontend/feature_pipeline.cc
-  frontend/fft.cc
-)
-target_link_libraries(frontend PUBLIC glog)
+add_library(frontend STATIC frontend/feature_pipeline.cc)
+target_link_libraries(frontend PUBLIC glog fftw3)
 
 # decoder
 add_library(decoder STATIC

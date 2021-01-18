@@ -26,7 +26,7 @@ wav_path=your_test_wav_path
 model_dir=your_model_dir
 ./build/decoder_main \
     --chunk_size -1 \
-    --wav_path  \
+    --wav_path $wav_path \
     --model_path $model_dir/final.zip \
     --dict_path $model_dir/words.txt
 ```

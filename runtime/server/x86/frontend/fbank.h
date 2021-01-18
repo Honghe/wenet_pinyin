@@ -20,9 +20,8 @@
 #include <utility>
 #include <vector>
 
+#include "api/fftw3.h"
 #include "glog/logging.h"
-
-#include "frontend/fft.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926535897932384626433832795
@@ -140,8 +139,12 @@ class Fbank {
     if (num_samples < frame_length_) return 0;
     int num_frames = 1 + ((num_samples - frame_length_) / frame_shift_);
     feat->resize(num_frames);
-    std::vector<float> fft_real(fft_points_, 0), fft_img(fft_points_, 0);
+    fftw_complex in[fft_points_];
+    fftw_complex out[fft_points_];
+    fftw_plan plan =
+        fftw_plan_dft_1d(fft_points_, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
     std::vector<float> power(fft_points_ / 2);
+
     for (int i = 0; i < num_frames; ++i) {
       std::vector<float> data(wave.data() + i * frame_shift_,
                               wave.data() + i * frame_shift_ + frame_length_);
@@ -161,14 +164,15 @@ class Fbank {
       PreEmphasis(0.97, &data);
       Hamming(&data);
       // copy data to fft_real
-      memset(fft_img.data(), 0, sizeof(float) * fft_points_);
-      memset(fft_real.data() + frame_length_, 0,
-             sizeof(float) * (fft_points_ - frame_length_));
-      memcpy(fft_real.data(), data.data(), sizeof(float) * frame_length_);
-      fft(fft_real.data(), fft_img.data(), fft_points_);
+      for (int i = 0; i < fft_points_; i++) {
+        in[i][0] = i < frame_length_ ? data[i] : 0;
+        in[i][1] = 0;
+      }
+      fftw_execute(plan);
+
       // power
       for (int j = 0; j < fft_points_ / 2; ++j) {
-        power[j] = fft_real[j] * fft_real[j] + fft_img[j] * fft_img[j];
+        power[j] = out[j][0] * out[j][0] + out[j][1] * out[j][1];
       }
 
       (*feat)[i].resize(num_bins_);
@@ -187,10 +191,10 @@ class Fbank {
         }
 
         (*feat)[i][j] = mel_energy;
-        // printf("%f ", mel_energy);
       }
-      // printf("\n");
     }
+    fftw_destroy_plan(plan);
+    fftw_cleanup();
     return num_frames;
   }
 
