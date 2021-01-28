@@ -1,6 +1,6 @@
 # network architecture
 # encoder related
-encoder: transformer
+encoder: conformer
 encoder_conf:
     output_size: 256    # dimension of attention
     attention_heads: 4
@@ -9,8 +9,13 @@ encoder_conf:
     dropout_rate: 0.1
     positional_dropout_rate: 0.1
     attention_dropout_rate: 0.0
-    input_layer: conv2d # encoder architecture type
+    input_layer: conv2d # encoder input type, you can chose conv2d, conv2d6 and conv2d8
     normalize_before: true
+    cnn_module_kernel: 15
+    use_cnn_module: True
+    activation_type: 'swish'
+    pos_enc_layer_type: 'rel_pos'
+    selfattention_layer_type: 'rel_selfattn'
 
 # decoder related
 decoder: transformer
@@ -36,7 +41,7 @@ raw_wav: true
 collate_conf:
     # waveform level config
     wav_distortion_conf:
-        wav_dither: 0.0
+        wav_dither: 0
         wav_distortion_rate: 0.0
         distortion_methods: []
     speed_perturb: false
@@ -64,17 +69,17 @@ dataset_conf:
     max_length: 40960
     min_length: 0
     batch_type: 'static' # static or dynamic
-    batch_size: 16
+    batch_size: 12
     sort: true
 
 grad_clip: 5
 accum_grad: 1
-max_epoch: 120
+max_epoch: 70
 log_interval: 100
 
 optim: adam
 optim_conf:
-    lr: 0.002
+    lr: 0.004
 scheduler: warmuplr     # pytorch v1.1.0+ required
 scheduler_conf:
     warmup_steps: 25000
