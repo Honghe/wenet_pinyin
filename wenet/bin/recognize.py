@@ -29,7 +29,7 @@ from wenet.transformer.asr_model import init_asr_model
 from wenet.utils.checkpoint import load_checkpoint
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='training your network')
+    parser = argparse.ArgumentParser(description='recognize with your model')
     parser.add_argument('--config', required=True, help='config file')
     parser.add_argument('--test_data', required=True, help='test data file')
     parser.add_argument('--gpu',
@@ -100,6 +100,7 @@ if __name__ == '__main__':
                                     raw_wav=raw_wav)
     dataset_conf = configs.get('dataset_conf', {})
     dataset_conf['batch_size'] = args.batch_size
+    dataset_conf['batch_type'] = 'static'
     dataset_conf['sort'] = False
     test_dataset = AudioDataset(args.test_data, **dataset_conf, raw_wav=raw_wav)
     test_data_loader = DataLoader(test_dataset,
