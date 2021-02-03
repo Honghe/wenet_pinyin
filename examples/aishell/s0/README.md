@@ -43,3 +43,7 @@
 | ctc prefix beam search   | 7.05 | 8.57 | 9.55 | 11.32 |
 | attention rescoring      | 6.05 | 6.93 | 7.50 | 8.53  |
 
+## Recognize one wav file demo
+```
+. ./reg_wav.sh <wav_file>
+```

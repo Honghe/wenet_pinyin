@@ -19,6 +19,7 @@ import copy
 import logging
 import os
 import sys
+import time
 
 import torch
 import yaml
@@ -128,6 +129,7 @@ if __name__ == '__main__':
 
     model.eval()
     with torch.no_grad(), open(args.result_file, 'w') as fout:
+        start = time.time()
         for batch_idx, batch in enumerate(test_data_loader):
             keys, feats, target, feats_lengths, target_lengths = batch
             feats = feats.to(device)
@@ -180,3 +182,4 @@ if __name__ == '__main__':
                 content = ' '.join(content)
                 logging.info('{} {}'.format(key, content))
                 fout.write('{} {}\n'.format(key, content))
+        logging.info(f'Elapse: {time.time()-start:.3}s\n')
