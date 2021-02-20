@@ -19,6 +19,11 @@ encoder_conf:
     causal: true
     use_dynamic_chunk: true
     cnn_module_norm: 'layer_norm' # using nn.LayerNorm makes model converge faster
+    use_dynamic_left_chunk: false
+    #
+    # use_dynamic_left_chunk 表示在训练时对左侧随机选取某个chunk个数进行attention.
+    # 历史信息将不会全都保留，从而推理时通过配合 num_decoding_left_chunks 节省内存和计算。
+    # use_dynamic_chunk 表示训练时随机使用不同的chunk_size
 
 # decoder related
 decoder: transformer

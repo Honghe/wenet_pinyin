@@ -64,3 +64,9 @@
 ```
 . ./reg_wav.sh <wav_file>
 ```
+为使其识别结果为拼音，几个相关的修改添加的文件如下，所以上游有更新时，这几个文件需要port。
+```
+s0/conf/train_unified_conformer_pinyin.yaml
+run_pinyin.sh
+wenet/bin/recognize_pinyin.py
+```
