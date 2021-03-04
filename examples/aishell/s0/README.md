@@ -2,7 +2,7 @@
 
 ## Conformer Result
 
-* Feature info: using fbank feature, dither=0, cmvn, speed perturb
+* Feature info: using fbank feature, dither, cmvn, online speed perturb
 * Training info: lr 0.002, batch size 18, 4 gpu, acc_grad 4, 240 epochs, dither 0.1
 * Decoding info: ctc_weight 0.5, average_num 20
 * Git hash: 919f07c4887ac500168ba84b39b535fd8e58918a
@@ -17,7 +17,7 @@
 
 ## Unified Conformer Result
 
-* Feature info: using fbank feature, dither=0, cmvn, speed perturb
+* Feature info: using fbank feature, dither=0, cmvn, oneline speed perturb
 * Training info: lr 0.001, batch size 16, 8 gpu, acc_grad 1, 180 epochs, dither 0.0
 * Decoding info: ctc_weight 0.5, average_num 20
 * Git hash: 919f07c4887ac500168ba84b39b535fd8e58918a
@@ -32,7 +32,7 @@
 
 ## Transformer Result
 
-* Feature info: using fbank feature, dither=0, with cmvn, no speed perturb.
+* Feature info: using fbank feature, dither, with cmvn, no speed perturb.
 * Training info: lr 0.002, batch size 26, 4 gpu, acc_grad 4, 240 epochs, dither 0.1
 * Decoding info: ctc_weight 0.5, average_num 20
 * Git hash: 919f07c4887ac500168ba84b39b535fd8e58918a

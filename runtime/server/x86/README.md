@@ -12,7 +12,7 @@ mkdir build && cd build && cmake .. && cmake --build .
 
 You can run the following on your trained model, or using our pretrained model. Click the following link to download the pretrained model.
 
-* [Chinese model trained on AIShell](http://mobvoi-speech-public.ufile.ucloud.cn/public/wenet/aishell/20210121_unified_transformer_server.tar.gz)
+* [Chinese model trained on AIShell](http://mobvoi-speech-public.ufile.ucloud.cn/public/wenet/aishell/20210221_unified_transformer_server.tar.gz)
 * [TODO: add English model trained on Librispeech](link)
 
 ## Run offline ASR demo
@@ -74,3 +74,12 @@ model, websocket server and websocket client enable streaming ASR.
 
 ![Runtime server demo](../../../docs/images/runtime_server.gif)
 
+## Run the demo in Docker
+
+When you encounter an issue trying to run the demo, we encourage you to run the demo in
+the Docker container. The image contains the latest release, a shell script and
+several waves to run the demo. Just run it as follows:
+
+``` bash
+docker run -it mobvoiwenet/wenet:v0.1.0 bash /home/run.sh
+```
