@@ -21,13 +21,24 @@ import os
 import sys
 import time
 
+import numpy as np
 import soundfile as sd
 import torch
+import torchaudio
 import yaml
 from torchaudio.compliance import kaldi
 
 from wenet.transformer.asr_model import init_asr_model
 from wenet.utils.checkpoint import load_checkpoint
+
+
+def wavfrom_bytes(data: bytes):
+    """Read wavform from bytes"""
+    sample_rate = 16000
+    wavform = np.frombuffer(data, dtype=np.int16)
+    wavform = torch.tensor(wavform, dtype=torch.float32)
+    wavform = wavform.unsqueeze(0)
+    return wavform, sample_rate
 
 
 def wavform_filelike(wav_file):
@@ -39,8 +50,14 @@ def wavform_filelike(wav_file):
 
 
 def wav_feat(wav_file, feature_extraction_conf):
-    # waveform, sample_rate = torchaudio.load_wav(wav_file)
-    waveform, sample_rate = wavform_filelike(wav_file)
+    # for torchaudio<0.8
+    if hasattr(wav_file, 'read'):
+        waveform, sample_rate = wavform_filelike(wav_file)
+    elif isinstance(wav_file, str):
+        waveform, sample_rate = torchaudio.load_wav(wav_file)
+    elif isinstance(wav_file, bytes):
+        waveform, sample_rate = wavfrom_bytes(wav_file)
+
     wav_dither = 1.0
 
     mat = kaldi.fbank(
@@ -229,7 +246,7 @@ class WeNetASR:
                 # 输出为拼音，所以用空格分隔才好识别与计算CER
                 content = ' '.join(content)
                 logging.info('{} {}'.format(key, content))
-        logging.info(f'Elapse: {time.time() - start:.3}s\n')
+        logging.info(f'Elapse: {time.time() - start:.3}s')
         return content
 
 

@@ -50,9 +50,9 @@ def hello(msg):
 
 
 @huey.task()
-def reg(data, timestamp):
+def reg(data: bytes, timestamp):
     if time.time() - timestamp > 0.5:
-        logging.info('Task timestamp expired.')
+        logging.info('Task timestamp expired, pass.')
         return 'None'
     else:
-        return asr.reg('/home/ubuntu/Data/asr/audio_command/6seconds.wav')
+        return asr.reg(data)
