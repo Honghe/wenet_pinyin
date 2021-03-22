@@ -5,5 +5,3 @@ sentencepiece
 tensorboard
 tensorboardX
 typeguard
-huey
-redis

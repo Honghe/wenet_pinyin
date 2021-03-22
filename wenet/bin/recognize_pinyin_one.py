@@ -21,8 +21,8 @@ import os
 import sys
 import time
 
+import soundfile as sd
 import torch
-import torchaudio
 import yaml
 from torchaudio.compliance import kaldi
 
@@ -31,8 +31,17 @@ from wenet.transformer.asr_model import init_asr_model
 from wenet.utils.checkpoint import load_checkpoint
 
 
+def wavform_filelike(wav_file):
+    """Read wavform from wave file or file-like object.
+    Since only torchaudio>=0.8 supports loading filelike object, so use this shim"""
+    data, sample_rate = sd.read(wav_file, dtype='int16')
+    waveform = torch.tensor([data], dtype=torch.float32)
+    return waveform, sample_rate
+
+
 def wav_feat(wav_file, feature_extraction_conf):
-    waveform, sample_rate = torchaudio.load_wav(wav_file)
+    # waveform, sample_rate = torchaudio.load_wav(wav_file)
+    waveform, sample_rate = wavform_filelike(wav_file)
     wav_dither = 1.0
 
     mat = kaldi.fbank(
